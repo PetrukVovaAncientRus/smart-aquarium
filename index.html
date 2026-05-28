@@ -303,6 +303,114 @@
           transform: scale(0.74);
         }
       }
+
+      @media (max-width: 767px) {
+        body {
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+
+        .frame-shell {
+          display: block;
+          height: auto;
+          min-height: 100vh;
+          overflow: visible;
+        }
+
+        .stage {
+          width: 100% !important;
+          height: auto !important;
+          min-height: 100vh;
+          padding: 96px 16px 112px !important;
+          transform: none !important;
+        }
+
+        .theme-toggle {
+          top: 14px;
+          left: 14px;
+          width: 68px;
+          height: 68px;
+        }
+
+        nav {
+          position: fixed !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          top: auto !important;
+          width: 100% !important;
+          display: grid !important;
+          grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+          gap: 6px !important;
+          padding: 8px !important;
+          background: rgba(0, 77, 77, 0.96) !important;
+          backdrop-filter: blur(8px);
+        }
+
+        .nav-button {
+          width: auto !important;
+          height: 64px !important;
+          border-width: 3px;
+          border-radius: 14px;
+        }
+
+        .nav-button svg {
+          max-width: 30px;
+          max-height: 34px;
+        }
+
+        .nav-button span {
+          display: none !important;
+        }
+
+        #dashboard,
+        .screen:target {
+          display: grid;
+          gap: 18px;
+          width: 100%;
+        }
+
+        .desktop-grid {
+          display: grid;
+          gap: 18px;
+        }
+
+        .desktop-position {
+          position: relative !important;
+          left: auto !important;
+          top: auto !important;
+          right: auto !important;
+          bottom: auto !important;
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0;
+          margin: 0 !important;
+          overflow: visible !important;
+        }
+
+        .desktop-position [class*="absolute"] {
+          position: relative !important;
+          left: auto !important;
+          right: auto !important;
+          top: auto !important;
+          bottom: auto !important;
+          transform: none !important;
+        }
+
+        .desktop-position [class*="w-["],
+        .desktop-position [class*="h-["] {
+          max-width: 100% !important;
+        }
+
+        .desktop-position svg {
+          max-width: 100%;
+          height: auto;
+        }
+
+        .desktop-position .grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
     </style>
   </head>
   <body class="bg-tealBase text-white">
@@ -660,4 +768,3 @@ The water is too alkaline, causing gill damage.</p>
 
   </body>
 </html>
-
