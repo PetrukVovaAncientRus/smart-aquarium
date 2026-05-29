@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
     <title>Aquarium Monitoring</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,6 +36,7 @@
     </script>
     <style>
       :root {
+        color-scheme: light only;
         --seamless-waves: url("data:image/svg+xml,%3Csvg width='720' height='1024' viewBox='0 0 720 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 145 C120 75 240 75 360 145 C480 215 600 215 720 145 L720 0 L0 0 Z' fill='%23004D4D' fill-opacity='0.30'/%3E%3Cpath d='M0 340 C120 270 240 270 360 340 C480 410 600 410 720 340 L720 450 C600 520 480 520 360 450 C240 380 120 380 0 450 Z' fill='%23004D4D' fill-opacity='0.24'/%3E%3Cpath d='M0 650 C120 580 240 580 360 650 C480 720 600 720 720 650 L720 770 C600 840 480 840 360 770 C240 700 120 700 0 770 Z' fill='%23004D4D' fill-opacity='0.26'/%3E%3Cpath d='M0 925 C120 855 240 855 360 925 C480 995 600 995 720 925 L720 1024 L0 1024 Z' fill='%23004D4D' fill-opacity='0.22'/%3E%3C/svg%3E");
       }
       
@@ -161,7 +163,6 @@
       body:has(#themeToggle:checked),
       body:has(#themeToggle:checked) .frame-shell {
         background-color: #003333;
-        filter: saturate(0.9);
       }
 
       body:has(#themeToggle:checked) .theme-toggle {
@@ -175,7 +176,12 @@
       }
 
       body:has(#themeToggle:checked) .nav {
-        border-color: #003333 !important;
+        background-color: rgba(0, 51, 51, 0.97) !important;
+        border-color: #003333;
+      }
+
+      body:has(#themeToggle:checked) nav {
+        background-color: rgba(0, 51, 51, 0.97) !important;
       }
 
       body:has(#themeToggle:checked) .nav-button {
@@ -197,11 +203,12 @@
       }
 
       body:has(#themeToggle:checked) article {
-        background-color: #003333 !important;
+        background-color: #002929 !important;
+        border-color: #8B3A1E !important;
       }
 
       body:has(#themeToggle:checked) article [class*="bg-tealDark"] {
-        background-color: #003333 !important;
+        background-color: #002929 !important;
       }
 
       @keyframes wavesDrift {
@@ -305,31 +312,68 @@
       }
 
       @media (max-width: 767px) {
+        html, body {
+          height: 100%;
+          overflow: hidden;
+        }
+
         body {
           overflow-x: hidden;
-          overflow-y: auto;
+          overflow-y: hidden;
         }
 
         .frame-shell {
           display: block;
-          height: auto;
-          min-height: 100vh;
-          overflow: visible;
+          height: 100%;
+          min-height: 100%;
+          overflow: hidden;
         }
 
         .stage {
           width: 100% !important;
-          height: auto !important;
-          min-height: 100vh;
-          padding: 96px 16px 112px !important;
+          height: 100% !important;
+          min-height: 100%;
+          overflow: hidden;
+          padding: 0 !important;
           transform: none !important;
+          position: relative;
+        }
+
+        /* Each screen takes full viewport and scrolls independently */
+        #dashboard,
+        .screen {
+          display: none;
+          position: absolute;
+          inset: 0;
+          overflow-y: auto;
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+          padding: 90px 16px 100px;
+        }
+
+        #dashboard,
+        .screen:target {
+          display: grid;
+          gap: 18px;
+          width: 100%;
+          align-content: start;
+        }
+
+        .stage:has(.screen:target) #dashboard {
+          display: none;
+        }
+
+        .stage:has(#dashboard:target) #dashboard {
+          display: grid;
         }
 
         .theme-toggle {
+          position: fixed;
           top: 14px;
           left: 14px;
-          width: 68px;
-          height: 68px;
+          width: 56px;
+          height: 56px;
+          z-index: 100;
         }
 
         nav {
@@ -343,13 +387,16 @@
           grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
           gap: 6px !important;
           padding: 8px !important;
-          background: rgba(0, 77, 77, 0.96) !important;
-          backdrop-filter: blur(8px);
+          background: rgba(0, 77, 77, 0.97) !important;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          z-index: 99 !important;
+          border-top: 2px solid rgba(0,0,0,0.2);
         }
 
         .nav-button {
           width: auto !important;
-          height: 64px !important;
+          height: 60px !important;
           border-width: 3px;
           border-radius: 14px;
         }
@@ -361,13 +408,6 @@
 
         .nav-button span {
           display: none !important;
-        }
-
-        #dashboard,
-        .screen:target {
-          display: grid;
-          gap: 18px;
-          width: 100%;
         }
 
         .desktop-grid {
