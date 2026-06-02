@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@700&display=swap"
     rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -123,11 +124,36 @@
       opacity: 1;
     }
 
+    .cleanFilterBtn {
+      transition: transform 280ms ease, box-shadow 280ms ease;
+    }
+
+    .cleanFilterBtn:hover {
+      transform: scale(1.04);
+      box-shadow: 0 8px 8px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .cleanFilterBtn:active {
+      transform: scale(0.98);
+    }
+
     .light-dot {
-      transition: background-color 360ms ease, box-shadow 360ms ease;
+      background-color: #000000b3;
+      box-shadow: none;
+      transition: background-color 310ms ease, box-shadow 310ms ease;
     }
 
     .light-card:hover .light-dot {
+      background-color: #FFFF00;
+      box-shadow: 0 0 0 4px rgba(234, 179, 8, 0.25);
+    }
+
+    .light-dot.is-on {
+      background-color: #FFFF00;
+      box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.15);
+    }
+
+    .light-card:hover .light-dot.is-on {
       background-color: #000000b3;
       box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.16);
     }
@@ -194,6 +220,11 @@
     body:has(#themeToggle:checked) .nav-button path {
       fill: #ff7f50;
       fill-opacity: 1;
+    }
+
+    body:has(#themeToggle:checked) .cleanFilterBtn {
+      background-color: #004d4d;
+      color: #003333;
     }
 
     body:has(#themeToggle:checked) .stage:has(#dashboard:target) .nav-dashboard,
@@ -540,8 +571,8 @@
     }
   </style>
 </head>
-
-<body class="bg-tealBase text-white">
+<script src="script.js"></script>
+<body class="bg-tealBase text-white select-none">
   <input id="themeToggle" class="theme-switch" type="checkbox" />
   <label class="theme-toggle" for="themeToggle" aria-label="Toggle dark theme">
     <svg width="40" height="40" viewBox="0 0 82 82" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -649,13 +680,12 @@
             <div class="grid h-full grid-cols-[1fr_68px] gap-6">
               <div class="flex flex-col justify-center">
                 <h2 class="text-center text-base font-normal leading-6">Water Temperature:</h2>
-                <p class="soft-value mt-5 text-center font-display text-[32px] font-bold leading-none text-white">24.6
-                  &deg;C</p>
+                <p id="tempValue" class="soft-value mt-5 text-center font-display text-[32px] font-bold leading-none text-white">24.6 &deg;C</p>
               </div>
               <div
                 class="flex flex-col items-center justify-center gap-[26px] rounded-lg border border-coralDark bg-tealDark shadow-figma">
-                <span class="h-4 w-4 rounded-full bg-good"></span>
-                <span class="text-base font-normal">Good</span>
+                <span id="tempDot" class="h-4 w-4 rounded-full bg-good"></span>
+                <span id="tempIndicator" class="text-base font-normal">Good</span>
               </div>
             </div>
           </article>
@@ -665,45 +695,45 @@
             <div class="grid h-full grid-cols-[1fr_68px] gap-6">
               <div class="flex flex-col justify-center">
                 <h2 class="text-center text-base font-normal leading-6">Acidity of the pH:</h2>
-                <p class="soft-value mt-5 text-center font-display text-[32px] font-bold leading-none text-white">7.4 pH
+                <p id="pHValue" class="soft-value mt-5 text-center font-display text-[32px] font-bold leading-none text-white">7.4 pH
                 </p>
               </div>
               <div
                 class="flex flex-col items-center justify-center gap-[26px] rounded-lg border border-coralDark bg-tealDark shadow-figma">
-                <span class="h-4 w-4 rounded-full bg-good"></span>
-                <span class="text-base font-normal">Good</span>
+                <span id="pHDot" class="h-4 w-4 rounded-full bg-good"></span>
+                <span id="pHIndicator" class="text-base font-normal">Good</span>
               </div>
             </div>
           </article>
 
           <article
-            class="desktop-position absolute left-[130px] top-[360px] flex h-[104px] w-[268px] items-center gap-6 rounded-2xl border border-coralDark bg-tealDark p-6 shadow-figma">
-            <span class="h-4 w-4 rounded-full bg-bad"></span>
-            <h2 class="text-base font-normal leading-6">Need to clean the filter</h2>
+            class="desktop-position absolute left-[130px] top-[360px] flex h-[104px] w-[max] whitespace-nowrap items-center gap-6 rounded-2xl border border-coralDark bg-tealDark p-6 shadow-figma">
+            <span id="filterDot" class="h-4 w-4 rounded-full bg-bad"></span>
+            <h2 id="filterDashboardStatus" class="text-base font-normal leading-6">Need to clean the filter</h2>
+          </article>
+
+          <article id="lightCard" 
+            class="light-card cursor-pointer select-none absolute left-[712px] top-[360px] flex h-[104px] w-[209px] items-center gap-6 rounded-2xl border border-coralDark bg-tealDark p-6 shadow-figma">
+            <span id="lightDot" class="light-dot h-4 w-4 rounded-full shrink-0"></span>
+            <h2 class="text-base font-normal leading-6 text-gray-200">Light:</h2>
+            <p id="lightStatus" class="font-display text-[32px] font-bold leading-none text-white/70">ON</p>
           </article>
 
           <article
-            class="light-card desktop-position absolute left-[712px] top-[360px] flex h-[104px] w-[209px] items-center gap-6 rounded-2xl border border-coralDark bg-tealDark p-6 shadow-figma">
-            <span class="light-dot h-4 w-4 rounded-full bg-normal"></span>
-            <h2 class="text-base font-normal leading-6">Light:</h2>
-            <p class="font-display text-[32px] font-bold leading-none text-white/70">ON</p>
-          </article>
-
-          <article
-            class="hover-card desktop-position absolute left-[348px] top-[624px] h-64 w-[456px] rounded-2xl border border-coralDark bg-tealDark px-9 py-6 shadow-figma">
+            class="hover-card desktop-position absolute left-[348px] top-[624px] h-64 w-[480px] rounded-2xl border border-coralDark bg-tealDark px-9 py-6 shadow-figma">
             <h1 class="font-display text-[32px] font-bold leading-tight">Feeding schedule:</h1>
-            <div class="mt-6 grid grid-cols-[1fr_158px] items-center gap-6">
+            <div class="mt-6 grid grid-cols-[1fr_200px] items-center">
               <p class="text-base font-normal leading-6">To the next feeding left:</p>
               <div
-                class="flex h-16 items-center justify-center rounded-lg border border-coralDark bg-tealDark shadow-figma">
-                <p class="soft-value font-display text-[32px] font-bold leading-none text-white">2 h 4 min</p>
+                class="flex h-16 w-56 items-center justify-center rounded-lg border border-coralDark bg-tealDark shadow-figma">
+                <p id="feedCountdown" class="soft-value font-display text-[32px] font-bold leading-none text-white">2 h 4 min</p>
               </div>
             </div>
             <div class="mt-6 flex items-center gap-6">
               <p class="w-[124px] text-base font-normal leading-6">Next feeding at:</p>
               <div
                 class="flex h-10 w-[55px] items-center justify-center rounded-lg border border-coralDark bg-tealDark shadow-figma">
-                <p class="text-base font-normal leading-6">16:00</p>
+                <p id="nextFeed" class="text-base font-normal leading-6">16:00</p>
               </div>
             </div>
           </article>
@@ -715,13 +745,13 @@
             <div class="grid h-full grid-cols-[1fr_68px] gap-6">
               <div class="flex flex-col justify-center">
                 <h2 class="text-center text-base font-normal leading-6">Temperature of water now:</h2>
-                <p class="soft-value mt-5 text-center font-display text-[32px] font-bold leading-none text-white">24.6
+                <p id="tempValue" class="soft-value mt-5 text-center font-display text-[32px] font-bold leading-none text-white">24.6
                   &deg;C</p>
               </div>
               <div
                 class="flex flex-col items-center justify-center gap-[26px] rounded-lg border border-coralDark bg-tealDark shadow-figma">
-                <span class="h-4 w-4 rounded-full bg-good"></span>
-                <span class="text-base font-normal">Good</span>
+                <span id="tempDot" class="h-4 w-4 rounded-full bg-good"></span>
+                <span id="tempIndicator" class="text-base font-normal">Good</span>
               </div>
             </div>
           </article>
@@ -747,19 +777,10 @@
 
           <article
             class="desktop-position absolute left-[130px] top-[648px] h-[312px] w-[480px] rounded-2xl border border-coralDark bg-tealDark px-8 py-6 shadow-figma">
-            <h2 class="text-center text-base font-normal leading-6">Temperature for the last 7 days:</h2>
-            <div class="relative mt-8 h-[210px]">
-              <div class="absolute left-[64px] top-0 h-[184px] w-1 bg-white"></div>
-              <div class="absolute left-[64px] top-[92px] h-1 w-[368px] bg-white"></div>
-              <span class="absolute left-0 top-[-2px] w-12 text-right text-base font-normal">26&deg;C</span>
-              <span class="absolute left-0 top-[82px] w-12 text-right text-base font-normal">25&deg;C</span>
-              <span class="absolute bottom-[18px] left-0 w-12 text-right text-base font-normal">24&deg;C</span>
-              <svg class="absolute left-[76px] top-[16px] h-[150px] w-[340px]" viewBox="0 0 340 150" fill="none"
-                aria-hidden="true">
-                <polyline points="0,92 45,30 90,118 135,78 180,112 225,64 270,108 315,78 340,100" stroke="#FF7F50"
-                  stroke-width="4" fill="none" />
-              </svg>
-            </div>
+              <h3 class="text-lg font-normal text-white mb-4">Temperature History</h3>
+              <div class="relative h-[240px] w-full">
+                <canvas id="tempChart"></canvas>
+              </div>
           </article>
 
           <article
@@ -842,19 +863,19 @@
             <div class="grid h-full grid-cols-[1fr_68px] gap-6">
               <div class="flex flex-col justify-center">
                 <h2 class="text-center text-base font-normal leading-6">Acidity of the pH now:</h2>
-                <p class="soft-value mt-5 text-center font-display text-[32px] font-bold leading-none text-white">7.4 pH
+                <p id="pHValue" class="soft-value mt-5 text-center font-display text-[32px] font-bold leading-none text-white">7.4 pH
                 </p>
               </div>
               <div
                 class="flex flex-col items-center justify-center gap-[26px] rounded-lg border border-coralDark bg-tealDark shadow-figma">
-                <span class="h-4 w-4 rounded-full bg-good"></span>
-                <span class="text-base font-normal">Good</span>
+                <span id="pHDot" class="h-4 w-4 rounded-full bg-good"></span>
+                <span id="pHIndicator" class="text-base font-normal">Good</span>
               </div>
             </div>
           </article>
 
           <article
-            class="desktop-position absolute left-[130px] top-[512px] h-[328px] w-[752px] rounded-2xl border border-coralDark bg-tealDark p-8 shadow-figma">
+            class="desktop-position absolute left-[130px] top-[512px] h-[352px] w-[752px] rounded-2xl border border-coralDark bg-tealDark p-8 shadow-figma">
             <p class="whitespace-pre-line text-base font-normal leading-6">Normal (Ideal Balance): 6.8 - 7.5 pH. This is
               a neutral,
               slightly alkaline environment that most fish and plants thrive in.
@@ -862,26 +883,48 @@
               too acidic, and the protective mucus on the fish is destroyed.
               Critical Alkalinity (Alkalosis): 8.5 pH and above, where the scale is on the right.
               The water is too alkaline, causing gill damage.</p>
-            <div class="relative mx-auto mt-10 h-20 w-[600px] max-w-full">
+            <div class="relative mx-auto mt-10 h-20 w-[640px] max-w-full">
               <div
                 class="absolute left-0 right-0 top-6 h-8 rounded-2xl border border-coralDark bg-tealBase shadow-figma">
               </div>
-              <div
-                class="absolute left-[49.5%] top-0 h-0 w-0 border-x-[8px] border-t-[14px] border-x-transparent border-t-coral">
+              <div id="phPointer" class="pHPointer absolute top-0 text-xl text-coral leading-none z-10" 
+                style="transition: left 0.3s ease; transform: translateX(-50%);">▼
               </div>
-              <div class="absolute left-0 right-0 top-6 grid h-8 grid-cols-[repeat(15,1fr)]">
-                <span></span><span class="border-l border-coralDark"></span><span
-                  class="border-l border-coralDark"></span><span class="border-l border-coralDark"></span><span
-                  class="border-l border-coralDark"></span><span class="border-l border-coralDark"></span><span
-                  class="border-l border-coralDark"></span><span class="border-l border-coralDark"></span><span
-                  class="border-l border-coralDark"></span><span class="border-l border-coralDark"></span><span
-                  class="border-l border-coralDark"></span><span class="border-l border-coralDark"></span><span
-                  class="border-l border-coralDark"></span><span class="border-l border-coralDark"></span><span
-                  class="border-l border-coralDark"></span>
+              <div class="absolute left-0 right-0 top-6 h-8 rounded-2xl border border-coralDark bg-tealBase shadow-figma overflow-hidden">
+                <div class="grid h-full grid-cols-14 text-center pointer-events-none">
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full border-r border-coralDark/40"></div>
+                  <div class="h-full"></div>
+                </div>
               </div>
-              <div
-                class="absolute bottom-0 left-0 right-0 grid grid-cols-[repeat(15,1fr)] text-center text-base font-normal">
-                <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span>
+            
+              <div class="absolute bottom-0 left-0 right-0 flex justify-between text-center text-base font-normal leading-none px-1 text-gray-300">
+                <span class="w-4 text-center">0</span>
+                <span class="w-4 text-center">1</span>
+                <span class="w-4 text-center">2</span>
+                <span class="w-4 text-center">3</span>
+                <span class="w-4 text-center">4</span>
+                <span class="w-4 text-center">5</span>
+                <span class="w-4 text-center">6</span>
+                <span class="w-4 text-center">7</span>
+                <span class="w-4 text-center">8</span>
+                <span class="w-4 text-center">9</span>
+                <span class="w-4 text-center">10</span>
+                <span class="text-center">11</span>
+                <span class="text-center">12</span>
+                <span class="text-center">13</span>
+                <span class="w-4 text-center">14</span>
               </div>
             </div>
           </article>
@@ -893,37 +936,23 @@
             <h1 class="absolute left-0 right-0 top-9 text-center font-display text-[32px] font-bold leading-tight">
               Filter status</h1>
 
-            <p class="absolute left-[215px] top-[98px] text-base font-normal leading-6">Wear Filter:</p>
-            <div class="absolute left-[56px] top-[140px] h-[420px] w-[420px]">
-              <svg width="416" height="416" viewBox="0 0 416 416" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <g filter="url(#filter0_d_91_313)">
-                  <path
-                    d="M400 200C404.418 200 408.017 203.584 407.84 207.998C406.221 248.479 392.337 287.586 367.937 320.084C341.933 354.719 305.389 379.976 263.798 392.059C222.208 404.142 177.819 402.398 137.305 387.089C96.7909 371.78 62.3411 343.733 39.1344 307.166C15.9278 270.598 5.21847 227.485 8.61654 184.308C12.0146 141.132 29.3364 100.225 57.9778 67.7378C86.6192 35.2505 125.032 12.9383 167.443 4.15561C207.237 -4.08546 248.533 0.00352919 285.851 15.7741C289.921 17.494 291.631 22.2756 289.75 26.2734L279.531 47.9893C277.65 51.987 272.89 53.6827 268.803 52.0036C239.339 39.8978 206.866 36.8402 175.554 43.3245C141.626 50.3507 110.895 68.2004 87.9822 94.1903C65.0691 120.18 51.2117 152.906 48.4932 187.447C45.7748 221.988 54.3422 256.478 72.9075 285.732C91.4728 314.987 119.033 337.424 151.444 349.671C183.855 361.918 219.366 363.314 252.639 353.647C285.911 343.981 315.146 323.775 335.95 296.067C355.148 270.497 366.208 239.812 367.8 207.998C368.021 203.585 371.582 200 376 200L400 200Z"
-                    fill="#FF7F50" />
-                </g>
-                <defs>
-                  <filter id="filter0_d_91_313" x="0" y="0" width="415.846" height="416" filterUnits="userSpaceOnUse"
-                    color-interpolation-filters="sRGB">
-                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                      result="hardAlpha" />
-                    <feOffset dy="8" />
-                    <feGaussianBlur stdDeviation="4" />
-                    <feComposite in2="hardAlpha" operator="out" />
-                    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
-                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_91_313" />
-                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_91_313" result="shape" />
-                  </filter>
-                </defs>
-              </svg>
-              <p
-                class="absolute inset-0 flex items-center justify-center font-display text-[64px] font-bold leading-none text-coralDark">
-                82%</p>
-            </div>
-            <div class="absolute left-[146px] top-[560px] flex items-center gap-6 text-base font-normal leading-6">
-              <span>Status:</span>
-              <span>Need to clean filter</span>
-            </div>
+              <p class="absolute left-[215px] top-[98px] text-base font-normal leading-6">Wear Filter:</p>
+              <div class="absolute left-[56px] top-[140px] h-[420px] w-[420px] flex items-center justify-center">
+                <div class="relative flex items-center justify-center h-[420px] w-[420px]">
+                  <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" stroke="#004D4D" stroke-width="8" fill="transparent" />
+                    <circle class="filterCircle" cx="50" cy="50" r="40" stroke="#FF7F50" stroke-width="8" fill="transparent"
+                            stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" style="transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease;" />
+                  </svg>
+                  
+                  <p id="filterPercent" class="absolute font-display text-[64px] font-bold leading-none text-white select-none">82%</p>
+                </div>
+              </div>
+              
+              <div class="absolute left-[176px] top-[560px] flex items-center gap-6 text-base font-normal leading-6">
+                <span>Status:</span>
+                <span id="filterStatusText">Need to clean filter</span>
+              </div>
 
             <p class="absolute left-[658px] top-[98px] text-base font-normal leading-6">Flow Rate / Pumping:</p>
             <div
@@ -936,6 +965,10 @@
                 <span>The pump works stably.</span>
               </div>
             </div>
+
+            <button
+              id="cleanFilterBtn" class="cleanFilterBtn absolute left-[620px] top-[496px] rounded-xl bg-coral px-8 py-4 font-display text-[32px] font-bold text-verydarkCoral leading-6 shadow-figma">Clean Filter
+            </button>
 
             <div
               class="absolute left-[58px] top-[650px] grid h-[224px] w-[872px] grid-cols-[repeat(4,1fr)] grid-rows-3 rounded-2xl border border-coralDark bg-tealDark/45 shadow-figma">
@@ -956,31 +989,38 @@
 
         <section id="feeding" class="screen desktop-grid">
           <article
-            class="hover-card desktop-position absolute left-[130px] top-[56px] h-64 w-[456px] rounded-2xl border border-coralDark bg-tealDark px-9 py-6 shadow-figma">
+            class="hover-card desktop-position absolute left-[130px] top-[56px] h-64 w-[480px] rounded-2xl border border-coralDark bg-tealDark px-9 py-6 shadow-figma">
             <h1 class="font-display text-[32px] font-bold leading-tight">To the next feeding left:</h1>
-            <div class="mt-8 grid grid-cols-[1fr_158px] items-center gap-6">
+            <div class="mt-8 grid grid-cols-[1fr_200px] items-center">
               <p class="text-base font-normal leading-6">To the next feeding left:</p>
               <div
-                class="flex h-16 items-center justify-center rounded-lg border border-coralDark bg-tealDark shadow-figma">
-                <p class="soft-value font-display text-[32px] font-bold leading-none text-white">2 h 4 min</p>
+                class="flex h-16 w-56 items-center justify-center rounded-lg border border-coralDark bg-tealDark shadow-figma">
+                <p id="feedCountdown" class="soft-value font-display text-[32px] font-bold leading-none text-white">2 h 4 min</p>
               </div>
             </div>
             <div class="mt-6 flex items-center gap-6">
               <p class="w-[124px] text-base font-normal leading-6">Next feeding at:</p>
               <div
                 class="flex h-10 w-[55px] items-center justify-center rounded-lg border border-coralDark bg-tealDark shadow-figma">
-                <p class="text-base font-normal leading-6">16:00</p>
+                <p id="nextFeed" class="text-base font-normal leading-6">16:00</p>
               </div>
             </div>
           </article>
 
-          <article
-            class="desktop-position absolute left-[626px] top-[56px] h-64 w-[456px] rounded-2xl border border-coralDark bg-tealDark px-10 py-6 shadow-figma">
-            <h1 class="text-center font-display text-[32px] font-bold leading-tight">Feed dispenser level:</h1>
-            <p class="soft-value mt-8 text-center font-display text-[64px] font-bold leading-none">65 %</p>
-            <div class="mt-10 flex items-center justify-center gap-6 text-base font-normal leading-6">
+          <article class="desktop-position absolute left-[626px] top-[56px] h-64 w-[456px] rounded-2xl border border-coralDark bg-tealDark px-10 py-6 shadow-figma">
+            <h1 class="text-center font-display text-[32px] font-bold leading-tight text-white">Feed dispenser level:</h1>
+            
+            <div class="mt-6 flex items-center justify-center gap-8">
+              <div class="relative h-20 w-12 rounded-lg border-2 border-coralDark bg-darktealBase p-1 overflow-hidden">
+                <div id="dispenserBar" class="absolute bottom-1 left-1 right-1 bg-coral rounded-md transition-all duration-500" style="height: 65%;"></div>
+              </div>
+              
+              <p id="dispenserPercent" class="font-display soft-value text-[64px] font-bold leading-none text-white select-none">54 %</p>
+            </div>
+            
+            <div class="mt-6 flex items-center justify-center gap-6 text-base font-normal leading-6 text-white">
               <span>Status:</span>
-              <span>Enough for 12 days</span>
+              <span id="dispenserStatusText" class="text-white">Enough for 12 days</span>
             </div>
           </article>
 
@@ -1001,7 +1041,7 @@
                 style="box-shadow:4px -4px 4px rgba(0, 0, 0, 0.25)"></div>
               <div class="absolute left-[280px] top-[90px] h-[270px] w-6 bg-coral"
                 style="box-shadow:4px -4px 4px rgba(0, 0, 0, 0.25)"></div>
-              <div class="absolute left-[360px] top-[90px] h-[270px] w-6 bg-coral"
+              <div class="absolute left-[360px] top-[180px] h-[180px] w-6 bg-coral"
                 style="box-shadow:4px -4px 4px rgba(0, 0, 0, 0.25)"></div>
               <div class="absolute left-[440px] top-0 h-[360px] w-6 bg-coral"
                 style="box-shadow:4px -4px 4px rgba(0, 0, 0, 0.25)"></div>
@@ -1009,22 +1049,24 @@
                 style="box-shadow:4px -4px 4px rgba(0, 0, 0, 0.25)"></div>
               <div class="absolute left-[600px] top-[180px] h-[180px] w-6 bg-coral"
                 style="box-shadow:4px -4px 4px rgba(0, 0, 0, 0.25)"></div>
-              <div class="absolute left-[680px] top-[180px] h-[180px] w-6 bg-coral"
+              <div class="absolute left-[680px] top-0 h-[360px] w-6 bg-coral"
                 style="box-shadow:4px -4px 4px rgba(0, 0, 0, 0.25)"></div>
-              <div class="absolute left-[760px] top-0 h-[360px] w-6 bg-coral"
+              <div class="absolute left-[760px] top-[90px] h-[270px] w-6 bg-coral"
                 style="box-shadow:4px -4px 4px rgba(0, 0, 0, 0.25)"></div>
 
               <div
                 class="absolute bottom-0 left-[96px] grid w-[720px] grid-cols-9 text-center text-base font-normal leading-6">
-                <span>11:00<br />24 may</span>
-                <span>16:00<br />24 may</span>
-                <span>21:00<br />24 may</span>
-                <span>9:00<br />25 may</span>
-                <span>14:00<br />25 may</span>
-                <span>19:00<br />25 may</span>
-                <span>22:00<br />25 may</span>
-                <span>11:00<br />26 may</span>
-                <span>16:00<br />26 may</span>
+                <span>11:00<br /><span class="dayCurrent">24 may</span></span>
+                <span>16:00<br /><span class="dayCurrent">24 may</span></span>
+                <span>21:00<br /><span class="dayCurrent">24 may</span></span>
+        
+                <span>11:00<br /><span class="dayNext1">25 may</span></span>
+                <span>16:00<br /><span class="dayNext1">25 may</span></span>
+                <span>21:00<br /><span class="dayNext1">25 may</span></span>
+        
+                <span>11:00<br /><span class="dayNext2">26 may</span></span>
+                <span>16:00<br /><span class="dayNext2">26 may</span></span>
+                <span>21:00<br /><span class="dayNext2">26 may</span></span>
               </div>
             </div>
           </article>
