@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aquarium Monitoring React</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              tealBase: "#008080",
+              tealDark: "#004D4D",
+              darktealBase: "#003333",
+              coral: "#FF7F50",
+              coralDark: "#8B3A1E",
+              good: "#39FF14",
+              bad: "#FF0000",
+              normal: "#FFFF00",
+              navFrame: "#000000B3",
+              verydarkCoral: "#000000B3",
+            },
+            fontFamily: {
+              display: ["Inter", "Arial", "sans-serif"],
+              rounded: ["Fredoka One", "Arial", "sans-serif"],
+            },
+            boxShadow: {
+              figma: "8px 8px 4px rgba(0, 0, 0, 0.25)",
+            },
+            gridTemplateColumns: {
+              14: "repeat(14, minmax(0, 1fr))",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
