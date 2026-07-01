@@ -1,59 +1,59 @@
 # 🐠 Smart Aquarium Monitoring System
 
-## Опис
-Повнофункціональна система моніторингу та управління акваріумом з React фронтенду та Node.js бекенду.
+## Description
+Fully functional aquarium monitoring and management system with React frontend and Node.js backend.
 
-## Технологічний стек
+## Technology stack
 
 ### Frontend
-- **React 19** - UI бібліотека
-- **Vite** - сучасний збірник
-- **Chart.js** - графіки
-- **Tailwind CSS** - стилізація
+- **React 19** - UI library
+- **Vite** - modern collection
+- **Chart.js** - charts
+- **Tailwind CSS** - styling
 
 ### Backend
 - **Node.js** - runtime
-- **Express** - веб-фреймворк
-- **CORS** - підтримка кросс-доменних запитів
+- **Express** - web framework
+- **CORS** - cross-domain request support
 
 ### DevOps
-- **Docker** - контейнеризація
-- **Docker Compose** - оркестрація сервісів
+- **Docker** - containerization
+- **Docker Compose** - service orchestration
 
 ---
 
-## 🚀 Запуск проекту
+## 🚀 Project launch
 
-### Варіант 1: Локальний запуск (Розробка)
+### Option 1: Local launch (Development)
 
 #### Backend
 ```bash
 cd backend
 npm install
 npm run dev
-# Сервер запуститься на http://localhost:5000
+# The server will start at http://localhost:5000
 ```
 
-#### Frontend (в іншому терміналі)
+#### Frontend (in another terminal)
 ```bash
 npm install
 npm run dev
-# Клієнт запуститься на http://localhost:5173
+# The client will start at http://localhost:5173
 ```
 
-### Варіант 2: Docker Compose (Production)
+### Option 2: Docker Compose (Production)
 
 ```bash
-# Збудувати та запустити
+# Build and run
 docker-compose up --build
 
-# Сервіси будуть доступні на:
+# Services will be available on:
 # Frontend: http://localhost:3000
 # Backend API: http://localhost:5000
 # Health Check: http://localhost:5000/health
 ```
 
-### Варіант 3: Тільки Backend в Docker
+### Option 3: Backend only in Docker
 ```bash
 cd backend
 docker build -t aquarium-backend .
@@ -62,67 +62,67 @@ docker run -p 5000:5000 aquarium-backend
 
 ---
 
-## 📊 Архітектура
+## 📊 Architecture
 
 ```
 Client (React)
-    ↓ fetch/CORS
+↓ fetch/CORS
 [API Routes]
-    ├── GET /api/status → поточний стан
-    ├── GET /api/history → історія датчиків
-    ├── POST /api/settings → оновити налаштування
-    ├── POST /api/light → перемикнути світло
-    └── POST /api/filter/clean → очистити фільтр
-    ↓
+├── GET /api/status → current status
+├── GET /api/history → sensor history
+├── POST /api/settings → update settings
+├── POST /api/light → toggle light
+└── POST /api/filter/clean → clear filter
+↓
 Server State (Node.js Express)
-    ├── temperature (24.6°C) → Генерується кожні 5 сек
-    ├── ph (7.4) → Генерується кожні 5 сек
-    ├── filterWear (82%) → +2% кожні 5 сек
-    ├── lightOn (boolean)
-    ├── foodLevel (54%)
-    └── Історія даних
+├── temperature (24.6°C) → Generated every 5 sec
+├── ph (7.4) → Generated every 5 sec
+├── filterWear (82%) → +2% every 5 sec
+├── lightOn (boolean)
+├── foodLevel (54%)
+└── Data history
 ```
 
 ---
 
-## 📁 Структура проекту
+## 📁 Structure project
 
 ```
 smart-aquarium/
 ├── backend/
-│   ├── server.js           # Express сервер + логіка
-│   ├── package.json        # Backend залежності
-│   ├── Dockerfile          # Контейнер для backend
-│   └── .env.example        # Приклад змінних оточення
+│ ├── server.js # Express server + logic
+│ ├── package.json # Backend dependencies
+│ ├── Dockerfile # Backend container
+│ └── .env.example # Environment variables example
 ├── src/
-│   ├── api/
-│   │   └── aquariumApi.js  # HTTP клієнт для API
-│   ├── hooks/
-│   │   └── useAquariumServer.js  # Хук для сервера
-│   ├── components/
-│   │   └── ConnectionStatus.jsx  # Статус з'єднання
-│   ├── useAquariumLogic.js # Логіка рендеру
-│   ├── App.jsx
-│   ├── main.jsx
-│   ├── LegacyLayout.jsx
-│   └── index.css
-├── docker-compose.yml      # Оркестрація сервісів
-├── Dockerfile              # Контейнер для frontend
-├── vite.config.js          # Конфіг Vite
-├── package.json            # Frontend залежності
+│ ├── api/
+│ │ └── aquariumApi.js # HTTP client for API
+│ ├── hooks/
+│ │ └── useAquariumServer.js # Server hook
+│ ├── components/
+│ │ └── ConnectionStatus.jsx # Connection status
+│ ├── useAquariumLogic.js # Render logic
+│ ├── App.jsx
+│ ├── main.jsx
+│ ├── LegacyLayout.jsx
+│ └── index.css
+├── docker-compose.yml # Service orchestration
+├── Dockerfile # Frontend container
+├── vite.config.js # Config Vite
+├── package.json # Frontend dependencies
 ├── index.html
-├── API.md                  # Документація API
-└── README.md               # Цей файл
+├── API.md # API documentation
+└── README.md # This file
 ```
 
 ---
 
-## 🔧 Конфігурація
+## 🔧 Configuration
 
 ### Frontend .env
 ```env
-VITE_API_URL=http://localhost:5000  # При локальному запуску
-VITE_API_URL=http://backend:5000    # При Docker запуску
+VITE_API_URL=http://localhost:5000 # When running locally
+VITE_API_URL=http://backend:5000 # When running Docker
 ```
 
 ### Backend .env
@@ -135,67 +135,65 @@ NODE_ENV=development
 
 ## 📡 API
 
-Детальна документація: [API.md](./API.md)
+Detailed documentation: [API.md](./API.md)
 
-### Основні ендпоїнти
+### Main endpoints
 
-| Метод | Маршрут | Опис |
-|-------|---------|------|
-| GET | `/api/status` | Поточний стан системи |
-| GET | `/api/history` | Історія датчиків |
-| POST | `/api/settings` | Оновити налаштування |
-| POST | `/api/light` | Перемикнути світло |
-| POST | `/api/filter/clean` | Очистити фільтр |
-| GET | `/health` | Health check |
-
----
-
-## 🎯 Функції
-
-- ✅ Моніторинг температури води (24-26°C)
-- ✅ Моніторинг pH (6.8-7.5)
-- ✅ Статус фільтра з процентом зношення
-- ✅ Управління світлом
-- ✅ Розклад годування
-- ✅ Управління рівнем корму
-- ✅ Графіки історії температури
-- ✅ Індикатор з'єднання з сервером
-- ✅ Автоматичні оновлення кожні 5 сек
-- ✅ Контейнеризація з Docker
+| Method | Route | Description |
+|------|------|------|
+| GET | `/api/status` | Current system status |
+| GET | `/api/history` | Sensor History |
+| POST | `/api/settings` | Update Settings |
+| POST | `/api/light` | Toggle Light |
+| POST | `/api/filter/clean` | Clean Filter |
+| GET | `/health` | Health Check |
 
 ---
 
-## 🐛 Розробка
+## 🎯 Features
 
-### Запуск в режимі розробки
+- ✅ Water temperature monitoring (24-26°C)
+- ✅ pH monitoring (6.8-7.5)
+- ✅ Filter status with wear percentage
+- ✅ Light control
+- ✅ Feeding schedule
+- ✅ Feed level control
+- ✅ Temperature history graphs
+- ✅ Server connection indicator
+- ✅ Automatic updates every 5 seconds
+- ✅ Containerization with Docker
+
+---
+
+## 🐛 Development
+
+### Start in development mode
 ```bash
-# Backend (з автоперезавантаженням)
+# Backend (with auto-reboot)
 cd backend && npm run dev
-
-# Frontend (з HMR)
+# Frontend (with HMR)
 npm run dev
 ```
 
-### Білд для production
+### Build for production
 ```bash
 # Frontend
 npm run build
-
 # Docker
 docker-compose up --build
 ```
 
 ---
 
-## 📝 Ліцензія
-МIT
+## 📝 License
+MIT
 
 ---
 
-## 👤 Автор
+## 👤 Author
 **Volodymyr Petruk** - PetrukVovaAncientRus
 
 ---
 
-## 🤝 Вклад
-Приватний проект для навчальних цілей.
+## 🤝 Contribution
+Private project for educational purposes.
